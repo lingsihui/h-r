@@ -5,8 +5,8 @@ let userId = "";
 let canvas=document.createElement("canvas");
 canvas.setAttribute("id", "stickerCanvas")
 let ctx=canvas.getContext("2d");
-canvas.width=1050;
-canvas.height=500;
+canvas.width=800;
+canvas.height=600;
 $("#canvasLoc").append(canvas);
 canvas.style.border='1px solid black';
 
@@ -120,7 +120,7 @@ function drawAll(){
     stickers.forEach(sticker => sticker.drawOnCanvas(ctx));
 }
 
-$("#submitIdForm").submit(e => {
+$("#disabledForm").submit(e => {
     e.preventDefault();
 })
 
@@ -133,7 +133,6 @@ function loadStickers() {
         if (!querySnapshot.empty) {
             querySnapshot.forEach(stickerInfo => {
                 db.collection("stickers").doc(stickerInfo.data().stickerId.trim()).get().then(stickerDoc => {
-                    console.log(stickerDoc.data());
                     let stickerImg = new Image(stickerDoc.data().width, stickerDoc.data().height);
                     stickerImg.onload = () => {
                         // define one image and save it in the stickers[] array
@@ -168,8 +167,7 @@ function addNewUser() {
     });
 }
 
-$("#submitCodeForm").submit(function(e) {
-    e.preventDefault();
+function addStickers() {
     //load new stickers
     const code = $("#submitCodeInput").val().trim();
 
@@ -197,7 +195,6 @@ $("#submitCodeForm").submit(function(e) {
                         
                     });
                 })
-                document.getElementById("submitCodeForm").reset();
             } else {
                 alert("Invalid code");
             }
@@ -208,10 +205,9 @@ $("#submitCodeForm").submit(function(e) {
     } else {
         alert("provide valid id first");
     }
-});
+}
 
-$("#saveForm").submit(function(e) {
-    e.preventDefault();
+function saveStickers() {
     //lock position of stickers
     for(let i=0;i<stickers.length;i++){
         const sticker = stickers[i];
@@ -229,4 +225,4 @@ $("#saveForm").submit(function(e) {
         });
     } 
     console.log("saved canvas");
-});
+}
