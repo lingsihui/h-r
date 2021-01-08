@@ -3,6 +3,7 @@ let userId = "";
 
 // canvas related lets
 let canvas=document.createElement("canvas");
+canvas.setAttribute("id", "stickerCanvas")
 let ctx=canvas.getContext("2d");
 canvas.width=1050;
 canvas.height=500;
@@ -36,6 +37,15 @@ canvas.onmousedown=handleMouseDown;
 canvas.onmousemove=handleMouseMove;
 canvas.onmouseup=handleMouseUp;
 canvas.onmouseout=handleMouseOut;
+
+function downloadImage() {
+    var canvas = document.getElementById("stickerCanvas");
+    image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+    var link = document.createElement('a');
+    link.download = "my-image.png";
+    link.href = image;
+    link.click();
+}
 
 function handleMouseDown(e){
     // tell the browser we're handling this event
@@ -114,12 +124,12 @@ $("#submitIdForm").submit(e => {
     e.preventDefault();
     stickers = [];
 
-    userId = $("#submitIdInput").val();
+    userId = $("#submitIdInput").val().trim();
     
     db.collection("users").doc(userId).collection("stickers").get().then(querySnapshot => {
         if (!querySnapshot.empty) {
             querySnapshot.forEach(stickerInfo => {
-                db.collection("stickers").doc(stickerInfo.data().stickerId).get().then(stickerDoc => {
+                db.collection("stickers").doc(stickerInfo.data().stickerId.trim()).get().then(stickerDoc => {
                     console.log(stickerDoc.data());
                     let stickerImg = new Image(stickerDoc.data().width, stickerDoc.data().height);
                     stickerImg.onload = () => {
@@ -149,7 +159,7 @@ $("#submitIdForm").submit(e => {
 $("#submitCodeForm").submit(function(e) {
     e.preventDefault();
     //load new stickers
-    const code = $("#submitCodeInput").val();
+    const code = $("#submitCodeInput").val().trim();
 
     if (userId != "") {
         db.collection("codes").where("code", "==", code).limit(1).get().then(querySnapshot => {
@@ -157,12 +167,12 @@ $("#submitCodeForm").submit(function(e) {
                 let stickerIds = querySnapshot.docs[0].data().stickerIds;
                 stickerIds.forEach(stickerId => {
                     db.collection("users").doc(userId).collection("stickers").add({
-                        stickerId: stickerId,
+                        stickerId: stickerId.trim(),
                         x: 0,
                         y: 0,
                         z: stickers.length
                     }).then(docRef => {
-                        db.collection("stickers").doc(stickerId).get().then(stickerDoc => {
+                        db.collection("stickers").doc(stickerId.trim()).get().then(stickerDoc => {
                             let stickerImg = new Image(stickerDoc.data().width, stickerDoc.data().height);
                             stickerImg.onload = () => {
                                 // define one image and save it in the stickers[] array
@@ -208,5 +218,3 @@ $("#saveForm").submit(function(e) {
     } 
     console.log("saved canvas");
 });
-
-document.getElementById('downloadLink').href = canvas.toDataURL();
