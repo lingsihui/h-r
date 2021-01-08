@@ -31,37 +31,36 @@ var startX,startY;
 var selectedShape;
 
 // load the image
-var card=new Image();
-card.onload=function(){
-    // define one image and save it in the shapes[] array
-    shapes.push( {x:30, y:10, width:127, height:150, image:card} );
-    // draw the shapes on the canvas
-    drawAll();
-    // listen for mouse events
-    canvas.onmousedown=handleMouseDown;
-    canvas.onmousemove=handleMouseMove;
-    canvas.onmouseup=handleMouseUp;
-    canvas.onmouseout=handleMouseOut;
-};
-// put your image src here!
-card.src='https://avatars3.githubusercontent.com/u/57402349?s=60&u=b414554476d8db793acfc90d924fce873be725f5&v=4';
+var srcArray=[{src: 'https://avatars3.githubusercontent.com/u/57402349?s=60&u=b414554476d8db793acfc90d924fce873be725f5&v=4',
+              x: 30,
+              y: 10,
+              width: 100,
+              height: 100,
+              }, {
+              src: 'https://avatars1.githubusercontent.com/u/35717847?s=60&v=4',
+              x: 50,
+              y: 10,
+              width: 100,
+              height: 100,
+              }];
 
-// load the image
-var card2=new Image();
-card2.onload=function(){
-    // define one image and save it in the shapes[] array
-    shapes.push( {x:50, y:10, width:127, height:150, image:card2} );
-    // draw the shapes on the canvas
-    drawAll();
-    // listen for mouse events
-    canvas.onmousedown=handleMouseDown;
-    canvas.onmousemove=handleMouseMove;
-    canvas.onmouseup=handleMouseUp;
-    canvas.onmouseout=handleMouseOut;
-};
-// put your image src here!
-card2.src='https://avatars1.githubusercontent.com/u/35717847?s=60&v=4';
+srcArray.forEach(e => {
+                 var card=new Image();
+                 card.onload=function(){
+                     // define one image and save it in the shapes[] array
+                     shapes.push( {x:e.x, y:e.y, width:e.width, height:e.height, image:card} );
+                     // draw the shapes on the canvas
+                     drawAll();
+                 };
+                 // put your image src here!
+                 card.src=e.src;
+                 })
 
+// listen for mouse events
+canvas.onmousedown=handleMouseDown;
+canvas.onmousemove=handleMouseMove;
+canvas.onmouseup=handleMouseUp;
+canvas.onmouseout=handleMouseOut;
 
 // given mouse X & Y (mx & my) and shape object
 // return true/false whether mouse is inside the shape
