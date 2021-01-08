@@ -1,3 +1,11 @@
+var db = firebase.firestore();
+
+db.collection("users").get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+        console.log(`${doc.id} => ${doc.data()}`);
+    });
+});
+
 // canvas related vars
 var canvas=document.createElement("canvas");
 var ctx=canvas.getContext("2d");
