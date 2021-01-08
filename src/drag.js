@@ -1,5 +1,3 @@
-// Taken from https://riptutorial.com/html5-canvas/example/18920/dragging-images-around-the-canvas
-
 // canvas related vars
 var canvas=document.createElement("canvas");
 var ctx=canvas.getContext("2d");
