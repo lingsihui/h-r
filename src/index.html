@@ -30,40 +30,47 @@
     </nav>
      
     <h1>Stickers</h1>
-    
-    <div class="row align-items-center">
-        <div class="col-3 bg-light p-3 border">
-            <form id="submitIdForm" class="row gx-3 gy-2 align-items-center">
-                <div class="row g-0">
-                    <div class="col-sm-9">
-                        <input type="text" class="form-control" id="submitIdInput" placeholder="ID">
+    <div class="container-fluid">
+        <div class="row align-items-start">
+            <div class="col bg-light p-3 border">
+                <form id="submitIdForm" class="row gx-3 gy-2 align-items-center">
+                    <div class="row g-0">
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="submitIdInput" placeholder="ID">
+                        </div>
+                        <div class="col-sm-1">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
                     </div>
-                    <div class="col-sm-1">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+                
+                <form id="saveForm" class="row gx-3 gy-2 align-items-center">
+                    <div class="col-sm-13 p-3 border">
+                      <button type="submit" class="btn btn-primary">Save</button>
                     </div>
-                </div>
-            </form>
-            
-            <form id="saveForm" class="row gx-3 gy-2 align-items-center">
-                <div class="col-sm-13 p-3 border">
-                  <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-            </form>
-            
-            <form id="submitCodeForm" class="row gx-3 gy-2 align-items-center">
-                <div class="row g-0">
-                    <div class="col-sm-9">
-                        <input type="text" class="form-control" id="submitCodeInput" placeholder="STICKER CODE">
+                </form>
+                
+                <form id="submitCodeForm" class="row gx-3 gy-2 align-items-center">
+                    <div class="row g-0">
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="submitCodeInput" placeholder="STICKER CODE">
+                        </div>
+                        <div class="col-sm-1">
+                            <button type="submit" class="btn btn-primary" >Submit</button>
+                        </div>
                     </div>
-                    <div class="col-sm-1">
-                        <button type="submit" class="btn btn-primary" >Submit</button>
+                </form>
+
+                <form id="download" class="row gx-3 gy-2 align-items-center">
+                    <div class="col-sm-13 p-3 border">
+                      <button type="submit" class="btn btn-primary">Download</button>
                     </div>
-                </div>
-            </form>
-        </div>
-    
-        <div class="col-sm-9 bg-light p-3 border">
-            <div id="canvasLoc"></div>
+                </form>
+            </div>
+        
+            <div class="col bg-light p-3 border">
+                <div id="canvasLoc"></div>
+            </div>
         </div>
     </div>
     

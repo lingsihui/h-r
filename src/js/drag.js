@@ -4,7 +4,7 @@ let userId = "";
 // canvas related lets
 let canvas=document.createElement("canvas");
 let ctx=canvas.getContext("2d");
-canvas.width=500;
+canvas.width=1050;
 canvas.height=500;
 $("#canvasLoc").append(canvas);
 canvas.style.border='1px solid black';
