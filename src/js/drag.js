@@ -1,10 +1,10 @@
 const db = firebase.firestore();
-let userId;
+let userId = "";
 
 // canvas related lets
 let canvas=document.createElement("canvas");
 let ctx=canvas.getContext("2d");
-canvas.width=1050;
+canvas.width=500;
 canvas.height=500;
 let cw=canvas.width;
 let ch=canvas.height;
@@ -39,25 +39,6 @@ canvas.onmousemove=handleMouseMove;
 canvas.onmouseup=handleMouseUp;
 canvas.onmouseout=handleMouseOut;
 
-// given mouse X & Y (mx & my) and sticker object
-// return true/false whether mouse is inside the sticker
-function isMouseInSticker(mx,my,sticker){
-    // is this sticker an image?
-    if(sticker.img){
-        // this is a rectangle
-        let rLeft=sticker.x;
-        let rRight=sticker.x+sticker.img.width;
-        let rTop=sticker.y;
-        let rBott=sticker.y+sticker.img.height;
-        // math test to see if mouse is inside img
-        if( mx>rLeft && mx<rRight && my>rTop && my<rBott){
-            return(true);
-        }
-    }
-    // the mouse isn't in any of this stickers
-    return(false);
-}
-
 function handleMouseDown(e){
     // tell the browser we're handling this event
     e.preventDefault();
@@ -68,7 +49,7 @@ function handleMouseDown(e){
     // test mouse position against all stickers
     // post result if mouse is in a sticker
     for(let i=0;i<stickers.length;i++){
-        if(isMouseInSticker(startX,startY,stickers[i])){
+        if(stickers[i].isMouseInSticker(startX,startY)){
             // the mouse is inside this sticker
             // select this sticker
             selectedSticker = stickers.splice(i, 1)[0];
@@ -136,63 +117,86 @@ function drawAll(){
     });
 }
 
-$("#submitIdForm").submit(loadUserStickers);
-
-class Sticker {
-    constructor(x, y, z, img, id) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.img = img;
-        this.id = id;
-    }
-}
-
-async function loadUserStickers(e) {
+$("#submitIdForm").submit(e => {
     e.preventDefault();
     stickers = [];
 
     userId = $("#submitIdInput").val();
     
-    let querySnapshot = await db.collection("users").doc(userId).collection("stickers").get().catch(error => {
+    db.collection("users").doc(userId).collection("stickers").get().then(querySnapshot => {
+        if (!querySnapshot.empty) {
+            querySnapshot.forEach(stickerInfo => {
+                db.collection("stickers").doc(stickerInfo.data().stickerId).get().then(stickerDoc => {
+                    console.log(stickerDoc.data());
+                    let stickerImg = new Image(stickerDoc.data().width, stickerDoc.data().height);
+                    stickerImg.onload = () => {
+                        // define one image and save it in the stickers[] array
+                        stickers.push( new Sticker(stickerInfo.data().x, stickerInfo.data().y, stickerInfo.data().z, stickerImg, stickerInfo.id) );
+                        if (stickers.length == querySnapshot.size) {
+                            stickers.sort((a,b) => a.z - b.z);
+                            // draw the stickers on the canvas
+                            console.log(stickers);
+                            drawAll();
+                        }
+                    };
+                    // put your image src here!
+                    stickerImg.src=stickerDoc.data().src;
+                });
+            });
+        } else {
+            userId = "";
+            alert("No such id");
+        }
+    }).catch(error => {
         // The document probably doesn't exist.
         console.error("Error updating document: ", error);
     });
-    
-    if(!querySnapshot.empty) {
-        querySnapshot.forEach(async stickerInfo => {
-            stickerDoc = await db.collection("stickers").doc(stickerInfo.data().stickerId).get();
-            let stickerImg = new Image(stickerDoc.data().width, stickerDoc.data().height);
-            stickerImg.onload = () => {
-                // define one image and save it in the stickers[] array
-                stickers.push( new Sticker(stickerInfo.data().x, stickerInfo.data().y, stickerInfo.data().z, stickerImg, stickerInfo.id) );
-                if (stickers.length == querySnapshot.size) {
-                    stickers.sort((a,b) => a.z - b.z);
-                    // draw the stickers on the canvas
-                    console.log(stickers);
-                    drawAll();
-                }
-            };
-            // put your image src here!
-            stickerImg.src=stickerDoc.data().src;
-        });
-        
-    } else {
-        alert("No such id");
-    }
-}
+})
 
-$("#submitCodeForm").submit(async function(e) {
+$("#submitCodeForm").submit(function(e) {
     e.preventDefault();
     //load new stickers
     const code = $("#submitCodeInput").val();
 
-    let querySnapshot = db.collection("codes").where("code", "==", code).limit(1).get();
+    if (userId != "") {
+        db.collection("codes").where("code", "==", code).limit(1).get().then(querySnapshot => {
+            if (!querySnapshot.empty) {
+                let stickerIds = querySnapshot.docs[0].data().stickerIds;
+                stickerIds.forEach(stickerId => {
+                    db.collection("users").doc(userId).collection("stickers").add({
+                        stickerId: stickerId,
+                        x: 0,
+                        y: 0,
+                        z: stickers.length
+                    }).then(docRef => {
+                        db.collection("stickers").doc(stickerId).get().then(stickerDoc => {
+                            let stickerImg = new Image(stickerDoc.data().width, stickerDoc.data().height);
+                            stickerImg.onload = () => {
+                                // define one image and save it in the stickers[] array
+                                stickers.push( new Sticker(0, 0, stickers.length, stickerImg, docRef.id) );
+                                drawAll();
+                            };
+                            // put your image src here!
+                            stickerImg.src=stickerDoc.data().src;
+                        });
+                        
+                    });
+                })
+            } else {
+                alert("Invalid code");
+            }
+        }).catch(error => {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
+        });
+    } else {
+        alert("provide valid id first");
+    }
 
     document.getElementById("submitCodeForm").reset();
 });
 
-$("#saveForm").submit(async function(e) {
+$("#saveForm").submit(function(e) {
     e.preventDefault();
     //lock position of stickers
     for(let i=0;i<stickers.length;i++){
