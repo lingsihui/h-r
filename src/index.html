@@ -33,20 +33,23 @@
     <div class="container-fluid">
         <div class="row align-items-start">
             <div class="col bg-light p-3 border">
+                <p>Enter your user id here or generate a new one to start a new canvas for your stickers.</p>
+
                 <form id="submitIdForm" class="row align-items-center">
                     <div class="row g-0">
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="submitIdInput" placeholder="ID">
                         </div>
                         <div class="col-sm-1">
-                            <button type="submit" class="btn btn-primary">Load</button>
+                            <button onclick="loadStickers()" class="btn btn-primary">Load</button>
+                        </div>
+                        <div class="col-sm-1">
+                            <button onclick="addNewUser()" class="btn btn-primary">New</button>
                         </div>
                     </div>
                 </form>
 
-                <div class="col-sm-1">
-                    <button onclick="addNewUser()" class="btn btn-primary">New</button>
-                </div>
+                <p>Enter the code you have bought or gotten from the event here to claim your stickers.</p>
                 
                 <form id="submitCodeForm" class="row align-items-center">
                     <div class="row g-0">
@@ -54,16 +57,19 @@
                             <input type="text" class="form-control" id="submitCodeInput" placeholder="STICKER CODE">
                         </div>
                         <div class="col-sm-1">
-                            <button type="submit" class="btn btn-primary" >Submit</button>
+                            <button type="submit" class="btn btn-primary" >Get Stickers</button>
                         </div>
                     </div>
                 </form>
+
+                <p>Remember to press save when your happy with your design!</p>
 
                 <form id="saveForm" class="row gx-3 gy-2 align-items-center">
                     <div class="col-sm-13 p-3 border">
                       <button type="submit" class="btn btn-primary">Save</button>
                     </div>
                 </form>
+                
                 <!-- <form class="row gx-3 gy-2 align-items-center"> -->
                     <div class="col-sm-13 p-3 border">
                         <button onclick="downloadImage()" class="btn btn-primary">Download</button>

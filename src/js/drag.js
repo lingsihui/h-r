@@ -122,6 +122,9 @@ function drawAll(){
 
 $("#submitIdForm").submit(e => {
     e.preventDefault();
+})
+
+function loadStickers() {
     stickers = [];
 
     userId = $("#submitIdInput").val().trim();
@@ -154,7 +157,16 @@ $("#submitIdForm").submit(e => {
         // The document probably doesn't exist.
         console.error("Error updating document: ", error);
     });
-})
+}
+
+function addNewUser() {
+    db.collection("users").add({
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(docRef => {
+        userId = docRef.id;
+        $("#submitIdInput").val(userId);
+    });
+}
 
 $("#submitCodeForm").submit(function(e) {
     e.preventDefault();
@@ -218,12 +230,3 @@ $("#saveForm").submit(function(e) {
     } 
     console.log("saved canvas");
 });
-
-function addNewUser() {
-    db.collection("users").add({
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(docRef => {
-        userId = docRef.id;
-        $("#submitIdInput").val(userId);
-    });
-}
