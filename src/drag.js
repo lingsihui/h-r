@@ -1,11 +1,5 @@
 var db = firebase.firestore();
 
-db.collection("users").get().then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} => ${doc.data()}`);
-    });
-});
-
 // canvas related vars
 var canvas=document.createElement("canvas");
 var ctx=canvas.getContext("2d");
@@ -13,7 +7,7 @@ canvas.width=500;
 canvas.height=500;
 var cw=canvas.width;
 var ch=canvas.height;
-document.getElementById("canvasLoc").appendChild(canvas);
+$("#canvasLoc").append(canvas);
 canvas.style.border='1px solid black';
 
 // used to calc canvas position relative to window
@@ -38,6 +32,7 @@ var startX,startY;
 // hold the index of the shape being dragged (if any)
 var selectedShape;
 
+
 // load the image
 var srcArray=[{src: 'https://avatars3.githubusercontent.com/u/57402349?s=60&u=b414554476d8db793acfc90d924fce873be725f5&v=4',
               x: 30,
@@ -52,17 +47,19 @@ var srcArray=[{src: 'https://avatars3.githubusercontent.com/u/57402349?s=60&u=b4
               height: 100,
               }];
 
-srcArray.forEach(e => {
-                 var card=new Image();
-                 card.onload=function(){
-                     // define one image and save it in the shapes[] array
-                     shapes.push( {x:e.x, y:e.y, width:e.width, height:e.height, image:card} );
-                     // draw the shapes on the canvas
-                     drawAll();
-                 };
-                 // put your image src here!
-                 card.src=e.src;
-                 })
+function loadStickers(srcArray){
+    srcArray.forEach(e => {
+        var card=new Image();
+        card.onload=function(){
+            // define one image and save it in the shapes[] array
+            shapes.push( {x:e.x, y:e.y, width:e.width, height:e.height, image:card} );
+            // draw the shapes on the canvas
+            drawAll();
+        };
+        // put your image src here!
+        card.src=e.src;
+        })
+}
 
 // listen for mouse events
 canvas.onmousedown=handleMouseDown;
@@ -168,15 +165,24 @@ function drawAll(){
     }
 }
 
-function submitIdButtonPressed(){
-    console.log("The id was submitted")
-}
+$("#submitIdForm").submit(function(e) {
+    e.preventDefault();
+    shapes = [];
+    db.collection("users").get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            console.log(`${doc.id} => ${doc.data()}`);
+        });
+    });
+    loadStickers(srcArray);
+    drawAll();
+    console.log($("#submitIdInput").val());
+});
 
 function submitCodeButtonPressed(){
-    console.log("The code was submitted")
+    console.log("The code was submitted");
 }
 
 function saveButtonPressed(){
-    console.log("The stickers were saved")
+    console.log("The stickers were saved");
 }
 
