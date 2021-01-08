@@ -218,3 +218,12 @@ $("#saveForm").submit(function(e) {
     } 
     console.log("saved canvas");
 });
+
+function addNewUser() {
+    db.collection("users").add({
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(docRef => {
+        userId = docRef.id;
+        $("#submitIdInput").val(userId);
+    });
+}

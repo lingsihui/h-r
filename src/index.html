@@ -33,24 +33,22 @@
     <div class="container-fluid">
         <div class="row align-items-start">
             <div class="col bg-light p-3 border">
-                <form id="submitIdForm" class="row gx-3 gy-2 align-items-center">
+                <form id="submitIdForm" class="row align-items-center">
                     <div class="row g-0">
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="submitIdInput" placeholder="ID">
                         </div>
                         <div class="col-sm-1">
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" class="btn btn-primary">Load</button>
                         </div>
                     </div>
                 </form>
+
+                <div class="col-sm-1">
+                    <button onclick="addNewUser()" class="btn btn-primary">New</button>
+                </div>
                 
-                <form id="saveForm" class="row gx-3 gy-2 align-items-center">
-                    <div class="col-sm-13 p-3 border">
-                      <button type="submit" class="btn btn-primary">Save</button>
-                    </div>
-                </form>
-                
-                <form id="submitCodeForm" class="row gx-3 gy-2 align-items-center">
+                <form id="submitCodeForm" class="row align-items-center">
                     <div class="row g-0">
                         <div class="col-sm-9">
                             <input type="text" class="form-control" id="submitCodeInput" placeholder="STICKER CODE">
@@ -61,6 +59,11 @@
                     </div>
                 </form>
 
+                <form id="saveForm" class="row gx-3 gy-2 align-items-center">
+                    <div class="col-sm-13 p-3 border">
+                      <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
                 <!-- <form class="row gx-3 gy-2 align-items-center"> -->
                     <div class="col-sm-13 p-3 border">
                         <button onclick="downloadImage()" class="btn btn-primary">Download</button>
