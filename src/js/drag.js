@@ -208,3 +208,5 @@ $("#saveForm").submit(function(e) {
     } 
     console.log("saved canvas");
 });
+
+document.getElementById('downloadLink').href = canvas.toDataURL();
