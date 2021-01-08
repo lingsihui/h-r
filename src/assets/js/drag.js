@@ -142,6 +142,7 @@ function loadStickers() {
                             // draw the stickers on the canvas
                             console.log(stickers);
                             drawAll();
+                            alert("Stickers loaded!");
                         }
                     };
                     // put your image src here!
@@ -195,6 +196,7 @@ function addStickers() {
                         
                     });
                 })
+                alert("Stickers loaded!");
             } else {
                 alert("Invalid code");
             }
@@ -209,6 +211,7 @@ function addStickers() {
 
 function saveStickers() {
     //lock position of stickers
+    let saved = 0;
     for(let i=0;i<stickers.length;i++){
         const sticker = stickers[i];
         db.collection("users").doc(userId).collection("stickers").doc(sticker.id).update({
@@ -217,7 +220,10 @@ function saveStickers() {
             z: i
         })
         .then(function() {
-            console.log("Document successfully updated!");
+            saved++;
+            if (saved == stickers.length) {
+                alert("Stickers saved!")
+            }
         })
         .catch(function(error) {
             // The document probably doesn't exist.
