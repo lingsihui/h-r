@@ -8,7 +8,7 @@ let ctx=canvas.getContext("2d");
 canvas.width=800;
 canvas.height=600;
 $("#canvasLoc").append(canvas);
-canvas.style.border='1px solid black';
+canvas.style.border='4px solid black';
 
 // used to calc canvas position relative to window
 function reOffset(){
