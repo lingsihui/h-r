@@ -23,4 +23,11 @@ class Sticker {
         // the mouse isn't in any of this stickers
         return(false);
     }
+
+    drawOnCanvas(ctx) {
+        if (this.img) {
+            // it's an img
+            ctx.drawImage(this.img, this.x, this.y);
+        }
+    }
 }

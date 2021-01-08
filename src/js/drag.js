@@ -6,8 +6,6 @@ let canvas=document.createElement("canvas");
 let ctx=canvas.getContext("2d");
 canvas.width=1050;
 canvas.height=500;
-let cw=canvas.width;
-let ch=canvas.height;
 $("#canvasLoc").append(canvas);
 canvas.style.border='1px solid black';
 
@@ -19,9 +17,9 @@ function reOffset(){
 }
 let offsetX,offsetY;
 reOffset();
-window.onscroll=function(e){ reOffset(); }
-window.onresize=function(e){ reOffset(); }
-canvas.onresize=function(e){ reOffset(); }
+window.onscroll=reOffset;
+window.onresize=reOffset();
+canvas.onresize=reOffset();
 
 // save relevant information about stickers drawn on the canvas
 let stickers=[];
@@ -108,13 +106,8 @@ function handleMouseMove(e){
 // clear the canvas and 
 // redraw all stickers in their current positions
 function drawAll(){
-    ctx.clearRect(0,0,cw,ch);
-    stickers.forEach(sticker => {
-        if (sticker.img) {
-            // it's an img
-            ctx.drawImage(sticker.img,sticker.x,sticker.y);
-        }
-    });
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    stickers.forEach(sticker => sticker.drawOnCanvas(ctx));
 }
 
 $("#submitIdForm").submit(e => {
@@ -182,6 +175,7 @@ $("#submitCodeForm").submit(function(e) {
                         
                     });
                 })
+                document.getElementById("submitCodeForm").reset();
             } else {
                 alert("Invalid code");
             }
@@ -192,8 +186,6 @@ $("#submitCodeForm").submit(function(e) {
     } else {
         alert("provide valid id first");
     }
-
-    document.getElementById("submitCodeForm").reset();
 });
 
 $("#saveForm").submit(function(e) {
