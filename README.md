@@ -1,6 +1,10 @@
 # h-r
 
-There are many things you can show off as a coder. Your GitHub pages, portfolio website, linkedIn, etc. However, there is one thing that all coders have in common which is having a laptop filled with stickers and #swags. It symbolises the accomplishments that they have made during their programming journey by participating in hackathons, events and competitions. However, with the COVID situation, the only people appreciating their stickers are themselves and their wall. By moving this concept online, they can proudly share their accomplishments with everyone virtually and even helps recruiters easily identify proactive coders.
+There are many things you can show off as a hacker. Your GitHub, portfolio website, LinkedIn, etc. However, there is one thing that all hackers and hustlers have in common which is having a laptop filled with stickers and #swag. It symbolizes the accomplishments that they have made during their programming journey by participating in hackathons, events and competitions. However, with the COVID situation, the only people appreciating their stickers are themselves and their wall. By moving this concept online, they can proudly share their accomplishments with everyone virtually and even helps recruiters easily identify proactive coders.
+
+## Devpost
+
+https://devpost.com/software/snowman-stickers
 
 ## References
 
