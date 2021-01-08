@@ -1,4 +1,5 @@
-var db = firebase.firestore();
+let db = firebase.firestore();
+let userId;
 
 // canvas related vars
 var canvas=document.createElement("canvas");
@@ -31,35 +32,6 @@ var startX,startY;
 
 // hold the index of the shape being dragged (if any)
 var selectedShape;
-
-
-// load the image
-var srcArray=[{src: 'https://avatars3.githubusercontent.com/u/57402349?s=60&u=b414554476d8db793acfc90d924fce873be725f5&v=4',
-              x: 30,
-              y: 10,
-              width: 100,
-              height: 100,
-              }, {
-              src: 'https://avatars1.githubusercontent.com/u/35717847?s=60&v=4',
-              x: 50,
-              y: 10,
-              width: 100,
-              height: 100,
-              }];
-
-function loadStickers(srcArray){
-    srcArray.forEach(e => {
-        var card=new Image();
-        card.onload=function(){
-            // define one image and save it in the shapes[] array
-            shapes.push( {x:e.x, y:e.y, width:e.width, height:e.height, image:card} );
-            // draw the shapes on the canvas
-            drawAll();
-        };
-        // put your image src here!
-        card.src=e.src;
-        })
-}
 
 // listen for mouse events
 canvas.onmousedown=handleMouseDown;
@@ -165,29 +137,42 @@ function drawAll(){
     }
 }
 
-$("#submitIdForm").submit(function(e) {
+$("#submitIdForm").submit(async function(e) {
     e.preventDefault();
     shapes = [];
 
-    let userId = $("#submitIdInput").val();
+    userId = $("#submitIdInput").val();
     
 
-    db.collection("users").doc(userId).collection("stickers").get().then((userStickersQuerySnapshot) => {
-        userStickersQuerySnapshot.forEach(stickerInfo => {
-            db.collection("stickers").doc(stickerInfo.data().stickerId).get().then(stickerDoc => {
-                var card=new Image();
-                card.onload=function(){
-                    // define one image and save it in the shapes[] array
-                    shapes.push( {x:stickerInfo.data().x, y:stickerInfo.data().y, width:stickerDoc.data().width, height:stickerDoc.data().height, image:card, id:stickerInfo.id} );
+    let querySnapshot = await db.collection("users").doc(userId).collection("stickers").get().catch(function(error) {
+        // The document probably doesn't exist.
+        console.error("Error updating document: ", error);
+    });
+    
+    if(!querySnapshot.empty) {
+        querySnapshot.forEach(async stickerInfo => {
+            stickerDoc = await db.collection("stickers").doc(stickerInfo.data().stickerId).get();
+            var card=new Image();
+            card.onload=function(){
+                // define one image and save it in the shapes[] array
+                shapes.push( {x:stickerInfo.data().x, y:stickerInfo.data().y, z:stickerInfo.data().z, width:stickerDoc.data().width, height:stickerDoc.data().height, image:card, id:stickerInfo.id} );
+                console.log(shapes.length);
+                console.log(querySnapshot.size);
+                if (shapes.length == querySnapshot.size) {
+                    console.log(shapes);
+                    shapes.sort((a,b) => a.z - b.z);
+                    console.log(shapes);
                     // draw the shapes on the canvas
                     drawAll();
-                };
-                // put your image src here!
-                card.src=stickerDoc.data().src;
-                console.log(shapes);
-            });
+                }
+            };
+            // put your image src here!
+            card.src=stickerDoc.data().src;
         });
-    });
+        
+    } else {
+        alert("No such id");
+    }
 });
 
 $("#submitCodeForm").submit(function(e) {
@@ -197,8 +182,23 @@ $("#submitCodeForm").submit(function(e) {
     document.getElementById("submitCodeForm").reset();
 });
 
-$("#saveForm").submit(function(e) {
+$("#saveForm").submit(async function(e) {
     e.preventDefault();
     //lock position of stickers
+    for(var i=0;i<shapes.length;i++){
+        shape = shapes[i];
+        db.collection("users").doc(userId).collection("stickers").doc(shape.id).update({
+            x: shape.x,
+            y: shape.y,
+            z: i
+        })
+        .then(function() {
+            console.log("Document successfully updated!");
+        })
+        .catch(function(error) {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
+        });
+    } 
     console.log("saved canvas");
 });
