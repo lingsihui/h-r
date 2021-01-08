@@ -176,13 +176,18 @@ $("#submitIdForm").submit(function(e) {
     loadStickers(srcArray);
     drawAll();
     console.log($("#submitIdInput").val());
+    document.getElementById("submitIdForm").reset();
 });
 
-function submitCodeButtonPressed(){
-    console.log("The code was submitted");
-}
+$("#submitCodeForm").submit(function(e) {
+    e.preventDefault();
+    //load new stickers
+    console.log($("#submitCodeInput").val());
+    document.getElementById("submitCodeForm").reset();
+});
 
-function saveButtonPressed(){
-    console.log("The stickers were saved");
-}
-
+$("#saveForm").submit(function(e) {
+    e.preventDefault();
+    //lock position of stickers
+    console.log("saved canvas");
+});
