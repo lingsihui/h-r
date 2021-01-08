@@ -1,37 +1,37 @@
-let db = firebase.firestore();
+const db = firebase.firestore();
 let userId;
 
-// canvas related vars
-var canvas=document.createElement("canvas");
-var ctx=canvas.getContext("2d");
+// canvas related lets
+let canvas=document.createElement("canvas");
+let ctx=canvas.getContext("2d");
 canvas.width=500;
 canvas.height=500;
-var cw=canvas.width;
-var ch=canvas.height;
+let cw=canvas.width;
+let ch=canvas.height;
 $("#canvasLoc").append(canvas);
 canvas.style.border='1px solid black';
 
 // used to calc canvas position relative to window
 function reOffset(){
-    var BB=canvas.getBoundingClientRect();
+    let BB=canvas.getBoundingClientRect();
     offsetX=BB.left;
     offsetY=BB.top;        
 }
-var offsetX,offsetY;
+let offsetX,offsetY;
 reOffset();
 window.onscroll=function(e){ reOffset(); }
 window.onresize=function(e){ reOffset(); }
 canvas.onresize=function(e){ reOffset(); }
 
-// save relevant information about shapes drawn on the canvas
-var shapes=[];
+// save relevant information about stickers drawn on the canvas
+let stickers=[];
 
 // drag related vars
-var isDragging=false;
-var startX,startY;
+let isDragging=false;
+let startX,startY;
 
-// hold the index of the shape being dragged (if any)
-var selectedShape;
+// hold the index of the sticker being dragged (if any)
+let selectedSticker;
 
 // listen for mouse events
 canvas.onmousedown=handleMouseDown;
@@ -39,22 +39,22 @@ canvas.onmousemove=handleMouseMove;
 canvas.onmouseup=handleMouseUp;
 canvas.onmouseout=handleMouseOut;
 
-// given mouse X & Y (mx & my) and shape object
-// return true/false whether mouse is inside the shape
-function isMouseInShape(mx,my,shape){
-    // is this shape an image?
-    if(shape.image){
+// given mouse X & Y (mx & my) and sticker object
+// return true/false whether mouse is inside the sticker
+function isMouseInSticker(mx,my,sticker){
+    // is this sticker an image?
+    if(sticker.img){
         // this is a rectangle
-        var rLeft=shape.x;
-        var rRight=shape.x+shape.width;
-        var rTop=shape.y;
-        var rBott=shape.y+shape.height;
-        // math test to see if mouse is inside image
+        let rLeft=sticker.x;
+        let rRight=sticker.x+sticker.img.width;
+        let rTop=sticker.y;
+        let rBott=sticker.y+sticker.img.height;
+        // math test to see if mouse is inside img
         if( mx>rLeft && mx<rRight && my>rTop && my<rBott){
             return(true);
         }
     }
-    // the mouse isn't in any of this shapes
+    // the mouse isn't in any of this stickers
     return(false);
 }
 
@@ -65,18 +65,18 @@ function handleMouseDown(e){
     // calculate the current mouse position
     startX=parseInt(e.clientX-offsetX);
     startY=parseInt(e.clientY-offsetY);
-    // test mouse position against all shapes
-    // post result if mouse is in a shape
-    for(var i=0;i<shapes.length;i++){
-        if(isMouseInShape(startX,startY,shapes[i])){
-            // the mouse is inside this shape
-            // select this shape
-            selectedShape = shapes.splice(i, 1)[0];
-            shapes.push(selectedShape);
+    // test mouse position against all stickers
+    // post result if mouse is in a sticker
+    for(let i=0;i<stickers.length;i++){
+        if(isMouseInSticker(startX,startY,stickers[i])){
+            // the mouse is inside this sticker
+            // select this sticker
+            selectedSticker = stickers.splice(i, 1)[0];
+            stickers.push(selectedSticker);
             // set the isDragging flag
             isDragging=true;
             // and return (==stop looking for 
-            //     further shapes under the mouse)
+            //     further stickers under the mouse)
             return;
         }
     }
@@ -112,12 +112,12 @@ function handleMouseMove(e){
     mouseX=parseInt(e.clientX-offsetX);
     mouseY=parseInt(e.clientY-offsetY);
     // how far has the mouse dragged from its previous mousemove position?
-    var dx=mouseX-startX;
-    var dy=mouseY-startY;
-    // move the selected shape by the drag distance
-    selectedShape.x+=dx;
-    selectedShape.y+=dy;
-    // clear the canvas and redraw all shapes
+    let dx=mouseX-startX;
+    let dy=mouseY-startY;
+    // move the selected sticker by the drag distance
+    selectedSticker.x+=dx;
+    selectedSticker.y+=dy;
+    // clear the canvas and redraw all stickers
     drawAll();
     // update the starting drag position (== the current mouse position)
     startX=mouseX;
@@ -125,26 +125,36 @@ function handleMouseMove(e){
 }
 
 // clear the canvas and 
-// redraw all shapes in their current positions
+// redraw all stickers in their current positions
 function drawAll(){
     ctx.clearRect(0,0,cw,ch);
-    for(var i=0;i<shapes.length;i++){
-        var shape=shapes[i];
-        if(shape.image){
-            // it's an image
-            ctx.drawImage(shape.image,shape.x,shape.y);
+    stickers.forEach(sticker => {
+        if (sticker.img) {
+            // it's an img
+            ctx.drawImage(sticker.img,sticker.x,sticker.y);
         }
+    });
+}
+
+$("#submitIdForm").submit(loadUserStickers);
+
+class Sticker {
+    constructor(x, y, z, img, id) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.img = img;
+        this.id = id;
     }
 }
 
-$("#submitIdForm").submit(async function(e) {
+async function loadUserStickers(e) {
     e.preventDefault();
-    shapes = [];
+    stickers = [];
 
     userId = $("#submitIdInput").val();
     
-
-    let querySnapshot = await db.collection("users").doc(userId).collection("stickers").get().catch(function(error) {
+    let querySnapshot = await db.collection("users").doc(userId).collection("stickers").get().catch(error => {
         // The document probably doesn't exist.
         console.error("Error updating document: ", error);
     });
@@ -152,44 +162,44 @@ $("#submitIdForm").submit(async function(e) {
     if(!querySnapshot.empty) {
         querySnapshot.forEach(async stickerInfo => {
             stickerDoc = await db.collection("stickers").doc(stickerInfo.data().stickerId).get();
-            var card=new Image();
-            card.onload=function(){
-                // define one image and save it in the shapes[] array
-                shapes.push( {x:stickerInfo.data().x, y:stickerInfo.data().y, z:stickerInfo.data().z, width:stickerDoc.data().width, height:stickerDoc.data().height, image:card, id:stickerInfo.id} );
-                console.log(shapes.length);
-                console.log(querySnapshot.size);
-                if (shapes.length == querySnapshot.size) {
-                    console.log(shapes);
-                    shapes.sort((a,b) => a.z - b.z);
-                    console.log(shapes);
-                    // draw the shapes on the canvas
+            let stickerImg = new Image(stickerDoc.data().width, stickerDoc.data().height);
+            stickerImg.onload = () => {
+                // define one image and save it in the stickers[] array
+                stickers.push( new Sticker(stickerInfo.data().x, stickerInfo.data().y, stickerInfo.data().z, stickerImg, stickerInfo.id) );
+                if (stickers.length == querySnapshot.size) {
+                    stickers.sort((a,b) => a.z - b.z);
+                    // draw the stickers on the canvas
+                    console.log(stickers);
                     drawAll();
                 }
             };
             // put your image src here!
-            card.src=stickerDoc.data().src;
+            stickerImg.src=stickerDoc.data().src;
         });
         
     } else {
         alert("No such id");
     }
-});
+}
 
-$("#submitCodeForm").submit(function(e) {
+$("#submitCodeForm").submit(async function(e) {
     e.preventDefault();
     //load new stickers
-    console.log($("#submitCodeInput").val());
+    const code = $("#submitCodeInput").val();
+
+    let querySnapshot = db.collection("codes").where("code", "==", code).limit(1).get();
+
     document.getElementById("submitCodeForm").reset();
 });
 
 $("#saveForm").submit(async function(e) {
     e.preventDefault();
     //lock position of stickers
-    for(var i=0;i<shapes.length;i++){
-        shape = shapes[i];
-        db.collection("users").doc(userId).collection("stickers").doc(shape.id).update({
-            x: shape.x,
-            y: shape.y,
+    for(let i=0;i<stickers.length;i++){
+        const sticker = stickers[i];
+        db.collection("users").doc(userId).collection("stickers").doc(sticker.id).update({
+            x: sticker.x,
+            y: sticker.y,
             z: i
         })
         .then(function() {
