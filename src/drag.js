@@ -30,7 +30,7 @@ var isDragging=false;
 var startX,startY;
 
 // hold the index of the shape being dragged (if any)
-var selectedShapeIndex;
+var selectedShape;
 
 // load the image
 var card=new Image();
@@ -97,9 +97,8 @@ function handleMouseDown(e){
         if(isMouseInShape(startX,startY,shapes[i])){
             // the mouse is inside this shape
             // select this shape
-            var selectedShape = shapes.splice(i, 1);
-            shapes = shapes.concat(selectedShape);
-            // selectedShapeIndex=i;
+            selectedShape = shapes.splice(i, 1)[0];
+            shapes.push(selectedShape);
             // set the isDragging flag
             isDragging=true;
             // and return (==stop looking for 
@@ -142,7 +141,6 @@ function handleMouseMove(e){
     var dx=mouseX-startX;
     var dy=mouseY-startY;
     // move the selected shape by the drag distance
-    var selectedShape=shapes[shapes.length - 1];
     selectedShape.x+=dx;
     selectedShape.y+=dy;
     // clear the canvas and redraw all shapes
