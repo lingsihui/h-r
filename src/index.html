@@ -14,29 +14,28 @@
   <body>
     <h1>Stickers</h1>
     
-    <form>
+    <form onsubmit="submitIdButtonPressed()">
       <div class="input-group">
       <div class="input-group-text">Input ID</div>
-      <input type="text" class="id-input" id="autoSizingInputGroup" placeholder="ID">
+      <input type="text" class="    " id="autoSizingInputGroup" placeholder="ID">
           <button type="submit" class="btn btn-primary">Submit</button>
       </div>
     </form>
 
     <div id="canvasLoc"></div>
 
-    <form>
+    <form onsubmit="saveButtonPressed()">
         <div class="save-button">
           <button type="submit" class="btn btn-primary">Save</button>
         </div>
+    </form>
     
+    <form onsubmit="submitCodeButtonPressed()">
         <div class="input-group">
         <div class="input-group-text">Input Code</div>
         <input type="text" class="code-input" id="autoSizingInputGroup" placeholder="ID">
+            <button type="submit" class="btn btn-primary" >Submit</button>
         </div>
-        <div class="col-auto">
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-    
     </form>
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>

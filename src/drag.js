@@ -159,3 +159,16 @@ function drawAll(){
         }
     }
 }
+
+function submitIdButtonPressed(){
+    console.log("The id was submitted")
+}
+
+function submitCodeButtonPressed(){
+    console.log("The code was submitted")
+}
+
+function saveButtonPressed(){
+    console.log("The stickers were saved")
+}
+
