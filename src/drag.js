@@ -5,7 +5,7 @@ canvas.width=500;
 canvas.height=500;
 var cw=canvas.width;
 var ch=canvas.height;
-document.body.appendChild(canvas);
+document.getElementById("canvasLoc").appendChild(canvas);
 canvas.style.border='1px solid black';
 
 // used to calc canvas position relative to window
