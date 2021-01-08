@@ -168,14 +168,26 @@ function drawAll(){
 $("#submitIdForm").submit(function(e) {
     e.preventDefault();
     shapes = [];
-    db.collection("users").get().then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-            console.log(`${doc.id} => ${doc.data()}`);
+
+    let userId = $("#submitIdInput").val();
+    
+
+    db.collection("users").doc(userId).collection("stickers").get().then((userStickersQuerySnapshot) => {
+        userStickersQuerySnapshot.forEach(stickerInfo => {
+            db.collection("stickers").doc(stickerInfo.data().stickerId).get().then(stickerDoc => {
+                var card=new Image();
+                card.onload=function(){
+                    // define one image and save it in the shapes[] array
+                    shapes.push( {x:stickerInfo.data().x, y:stickerInfo.data().y, width:stickerDoc.data().width, height:stickerDoc.data().height, image:card, id:stickerInfo.id} );
+                    // draw the shapes on the canvas
+                    drawAll();
+                };
+                // put your image src here!
+                card.src=stickerDoc.data().src;
+                console.log(shapes);
+            });
         });
     });
-    loadStickers(srcArray);
-    drawAll();
-    console.log($("#submitIdInput").val());
 });
 
 function submitCodeButtonPressed(){
