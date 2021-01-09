@@ -1,4 +1,6 @@
+// Access the database at firestore
 const db = firebase.firestore();
+
 let userId = "";
 
 // canvas related lets
@@ -38,19 +40,14 @@ canvas.onmousemove=handleMouseMove;
 canvas.onmouseup=handleMouseUp;
 canvas.onmouseout=handleMouseOut;
 
-function downloadImage() {
-    var canvas = document.getElementById("stickerCanvas");
-    image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-    var link = document.createElement('a');
-    link.download = "my-image.png";
-    link.href = image;
-    link.click();
-}
-
-function handleMouseDown(e){
+function handleEvent(e) {
     // tell the browser we're handling this event
     e.preventDefault();
     e.stopPropagation();
+}
+
+function handleMouseDown(e){
+    handleEvent(e)
     // calculate the current mouse position
     startX=parseInt(e.clientX-offsetX);
     startY=parseInt(e.clientY-offsetY);
@@ -59,7 +56,7 @@ function handleMouseDown(e){
     for(let i=0;i<stickers.length;i++){
         if(stickers[i].isMouseInSticker(startX,startY)){
             // the mouse is inside this sticker
-            // select this sticker
+            // select this sticker and bring it to the top
             selectedSticker = stickers.splice(i, 1)[0];
             stickers.push(selectedSticker);
             // set the isDragging flag
@@ -74,9 +71,7 @@ function handleMouseDown(e){
 function handleMouseUp(e){
     // return if we're not dragging
     if(!isDragging){return;}
-    // tell the browser we're handling this event
-    e.preventDefault();
-    e.stopPropagation();
+    handleEvent(e)
     // the drag is over -- clear the isDragging flag
     isDragging=false;
 }
@@ -84,9 +79,7 @@ function handleMouseUp(e){
 function handleMouseOut(e){
     // return if we're not dragging
     if(!isDragging){return;}
-    // tell the browser we're handling this event
-    e.preventDefault();
-    e.stopPropagation();
+    handleEvent(e)
     // the drag is over -- clear the isDragging flag
     isDragging=false;
 }
@@ -94,9 +87,7 @@ function handleMouseOut(e){
 function handleMouseMove(e){
     // return if we're not dragging
     if(!isDragging){return;}
-    // tell the browser we're handling this event
-    e.preventDefault();
-    e.stopPropagation();
+    handleEvent(e)
     // calculate the current mouse position         
     mouseX=parseInt(e.clientX-offsetX);
     mouseY=parseInt(e.clientY-offsetY);
@@ -121,7 +112,7 @@ function drawAll(){
 }
 
 $("#disabledForm").submit(e => {
-    e.preventDefault();
+    handleEvent(e)
 })
 
 function loadStickers() {
@@ -231,4 +222,13 @@ function saveStickers() {
         });
     } 
     console.log("saved canvas");
+}
+
+function downloadImage() {
+    var canvas = document.getElementById("stickerCanvas");
+    image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+    var link = document.createElement('a');
+    link.download = "snowman-stickers.png";
+    link.href = image;
+    link.click();
 }
