@@ -1,9 +1,9 @@
 class Sticker {
-    constructor(x, y, z, img, id) {
+    constructor(x, y, z, angle, img, id) {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.angle = 0;
+        this.angle = angle;
         this.img = img;
         this.id = id;
     }

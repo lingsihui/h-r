@@ -3,17 +3,22 @@ class StickerCanvas {
         this.offsetX, this.offsetY;
         this.stickers = []; // save relevant information about stickers drawn on the canvas
         this.canvasElement = document.createElement("canvas");
+        this.setCanvasAttributes(id, width, height, border);
+        this.ctx = this.canvasElement.getContext("2d");
+        // drag related vars
+        this.isDragging=false;
+        this.startX, this.startY;
+        this.selectedSticker; // hold the sticker being dragged (if any)
+        
+        this.db = db;
+    }
+
+    setCanvasAttributes(id, width, height, border) {
         this.canvasElement.setAttribute("id", id)
         this.canvasElement.width = width;
         this.canvasElement.height = height;
         this.canvasElement.style.border = border;
         this.canvasElement.onresize=this.reOffset;
-        this.ctx = this.canvasElement.getContext("2d");
-        // drag related vars
-        this.isDragging=false;
-        this.startX, this.startY;
-        // hold the sticker being dragged (if any)
-        this.selectedSticker;
 
         // listen for mouse events
         this.canvasElement.onmousedown=this.handleMouseDown.bind(this);
@@ -21,8 +26,6 @@ class StickerCanvas {
         this.canvasElement.onmouseup=this.handleMouseUp.bind(this);
         this.canvasElement.onmouseout=this.handleMouseOut.bind(this);
         this.canvasElement.onwheel=this.handleMouseWheel.bind(this);
-
-        this.db = db;
     }
 
     // used to calc canvas position relative to window
@@ -123,7 +126,12 @@ class StickerCanvas {
                         let stickerImg = new Image(stickerDoc.data().width, stickerDoc.data().height);
                         stickerImg.onload = () => {
                             // define one image and save it in the stickers[] array
-                            this.stickers.push( new Sticker(stickerInfo.data().x, stickerInfo.data().y, stickerInfo.data().z, stickerImg, stickerInfo.id) );
+                            this.stickers.push( new Sticker(stickerInfo.data().x,
+                                                            stickerInfo.data().y,
+                                                            stickerInfo.data().z,
+                                                            stickerInfo.data().angle,
+                                                            stickerImg,
+                                                            stickerInfo.id));
                             if (this.stickers.length == querySnapshot.size) {
                                 this.stickers.sort((a,b) => a.z - b.z);
                                 // draw the stickers on the canvas
@@ -167,13 +175,19 @@ class StickerCanvas {
                             stickerId: stickerId.trim(),
                             x: 0,
                             y: 0,
-                            z: this.stickers.length
+                            z: this.stickers.length,
+                            angle: 0
                         }).then(docRef => {
                             this.db.collection("stickers").doc(stickerId.trim()).get().then(stickerDoc => {
                                 let stickerImg = new Image(stickerDoc.data().width, stickerDoc.data().height);
                                 stickerImg.onload = () => {
                                     // define one image and save it in the stickers[] array
-                                    this.stickers.push( new Sticker(0, 0, stickers.length, stickerImg, docRef.id) );
+                                    this.stickers.push( new Sticker(0,
+                                                                    0, 
+                                                                    this.stickers.length,
+                                                                    0,
+                                                                    stickerImg,
+                                                                    docRef.id));
                                     drawAll();
                                 };
                                 // put your image src here!
@@ -198,16 +212,18 @@ class StickerCanvas {
     saveStickers() {
         //lock position of stickers
         let saved = 0;
+        const total = this.stickers.length
         for(let i=0;i<this.stickers.length;i++){
             const currSticker = this.stickers[i];
             this.db.collection("users").doc(userId).collection("stickers").doc(currSticker.id).update({
                 x: currSticker.x,
                 y: currSticker.y,
-                z: i
+                z: i,
+                angle: currSticker.angle
             })
             .then(function() {
                 saved++;
-                if (saved == this.stickers.length) {
+                if (saved == total) {
                     alert("Stickers saved!")
                 }
             })
@@ -220,7 +236,7 @@ class StickerCanvas {
     }
     
     downloadImage() {
-        image = this.canvasElement.toDataURL("image/png").replace("image/png", "image/octet-stream");
+        let image = this.canvasElement.toDataURL("image/png").replace("image/png", "image/octet-stream");
         let link = document.createElement('a');
         link.download = "snowman-stickers.png";
         link.href = image;
