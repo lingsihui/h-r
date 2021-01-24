@@ -1,9 +1,11 @@
 class StickerCanvas {
     constructor(id, width, height, border, db) {
         this.offsetX, this.offsetY;
+        this.width = width;
+        this.height = height;
         this.stickers = []; // save relevant information about stickers drawn on the canvas
         this.canvasElement = document.createElement("canvas");
-        this.setCanvasAttributes(id, width, height, border);
+        this.setCanvasAttributes(id, border);
         this.ctx = this.canvasElement.getContext("2d");
         // drag related vars
         this.isDragging=false;
@@ -13,10 +15,10 @@ class StickerCanvas {
         this.db = db;
     }
 
-    setCanvasAttributes(id, width, height, border) {
+    setCanvasAttributes(id, border) {
         this.canvasElement.setAttribute("id", id)
-        this.canvasElement.width = width;
-        this.canvasElement.height = height;
+        this.canvasElement.width = this.width;
+        this.canvasElement.height = this.height;
         this.canvasElement.style.border = border;
         this.canvasElement.onresize=this.reOffset;
 
@@ -121,6 +123,7 @@ class StickerCanvas {
         
         this.db.collection("users").doc(userId).collection("stickers").get().then(querySnapshot => {
             if (!querySnapshot.empty) {
+                const total = querySnapshot.size;
                 querySnapshot.forEach(stickerInfo => {
                     this.db.collection("stickers").doc(stickerInfo.data().stickerId.trim()).get().then(stickerDoc => {
                         let stickerImg = new Image(stickerDoc.data().width, stickerDoc.data().height);
@@ -132,7 +135,7 @@ class StickerCanvas {
                                                             stickerInfo.data().angle,
                                                             stickerImg,
                                                             stickerInfo.id));
-                            if (this.stickers.length == querySnapshot.size) {
+                            if (this.stickers.length == total) {
                                 this.stickers.sort((a,b) => a.z - b.z);
                                 // draw the stickers on the canvas
                                 this.drawAll();
@@ -165,6 +168,10 @@ class StickerCanvas {
     addStickers() {
         //load new stickers
         const code = $("#submitCodeInput").val().trim();
+        const initial = {x: this.width/2,
+                        y: this.height/2,
+                        z: this.stickers.length,
+                        angle: 0};
     
         if (userId != "") {
             this.db.collection("codes").where("code", "==", code).limit(1).get().then(querySnapshot => {
@@ -173,22 +180,19 @@ class StickerCanvas {
                     stickerIds.forEach(stickerId => {
                         this.db.collection("users").doc(userId).collection("stickers").add({
                             stickerId: stickerId.trim(),
-                            x: 0,
-                            y: 0,
-                            z: this.stickers.length,
-                            angle: 0
+                            ...initial
                         }).then(docRef => {
                             this.db.collection("stickers").doc(stickerId.trim()).get().then(stickerDoc => {
                                 let stickerImg = new Image(stickerDoc.data().width, stickerDoc.data().height);
                                 stickerImg.onload = () => {
                                     // define one image and save it in the stickers[] array
-                                    this.stickers.push( new Sticker(0,
-                                                                    0, 
-                                                                    this.stickers.length,
-                                                                    0,
+                                    this.stickers.push( new Sticker(initial.x,
+                                                                    initial.y,
+                                                                    initial.z,
+                                                                    Math.floor(Math.random() * 360),
                                                                     stickerImg,
                                                                     docRef.id));
-                                    drawAll();
+                                    this.drawAll();
                                 };
                                 // put your image src here!
                                 stickerImg.src=stickerDoc.data().src;
