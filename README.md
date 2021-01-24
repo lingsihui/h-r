@@ -19,3 +19,6 @@ https://stackoverflow.com/questions/55519577/how-can-i-download-html5-canvas-dra
 
 Firebase firestore
 https://firebase.google.com/docs/firestore/
+
+Rotate Image
+https://gamedev.stackexchange.com/questions/67274/is-it-possible-to-rotate-an-image-on-an-html5-canvas-without-rotating-the-whole

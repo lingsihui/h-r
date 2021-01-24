@@ -1,234 +1,246 @@
-// Access the database at firestore
-const db = firebase.firestore();
+class StickerCanvas {
+    constructor(id, width, height, border, db) {
+        this.offsetX, this.offsetY;
+        this.stickers = []; // save relevant information about stickers drawn on the canvas
+        this.canvasElement = document.createElement("canvas");
+        this.canvasElement.setAttribute("id", id)
+        this.canvasElement.width = width;
+        this.canvasElement.height = height;
+        this.canvasElement.style.border = border;
+        this.canvasElement.onresize=this.reOffset;
+        this.ctx = this.canvasElement.getContext("2d");
+        // drag related vars
+        this.isDragging=false;
+        this.startX, this.startY;
+        // hold the sticker being dragged (if any)
+        this.selectedSticker;
 
-let userId = "";
+        // listen for mouse events
+        this.canvasElement.onmousedown=this.handleMouseDown.bind(this);
+        this.canvasElement.onmousemove=this.handleMouseMove.bind(this);
+        this.canvasElement.onmouseup=this.handleMouseUp.bind(this);
+        this.canvasElement.onmouseout=this.handleMouseOut.bind(this);
+        this.canvasElement.onwheel=this.handleMouseWheel.bind(this);
 
-// canvas related lets
-let canvas=document.createElement("canvas");
-canvas.setAttribute("id", "stickerCanvas")
-let ctx=canvas.getContext("2d");
-canvas.width=800;
-canvas.height=600;
-$("#canvasLoc").append(canvas);
-canvas.style.border='4px solid black';
+        this.db = db;
+    }
 
-// used to calc canvas position relative to window
-function reOffset(){
-    let BB=canvas.getBoundingClientRect();
-    offsetX=BB.left;
-    offsetY=BB.top;        
-}
-let offsetX,offsetY;
-reOffset();
-window.onscroll=reOffset;
-window.onresize=reOffset();
-canvas.onresize=reOffset();
+    // used to calc canvas position relative to window
+    reOffset() {
+        let BB = this.canvasElement.getBoundingClientRect();
+        this.offsetX = BB.left;
+        this.offsetY = BB.top;        
+    }
 
-// save relevant information about stickers drawn on the canvas
-let stickers=[];
-
-// drag related vars
-let isDragging=false;
-let startX,startY;
-
-// hold the index of the sticker being dragged (if any)
-let selectedSticker;
-
-// listen for mouse events
-canvas.onmousedown=handleMouseDown;
-canvas.onmousemove=handleMouseMove;
-canvas.onmouseup=handleMouseUp;
-canvas.onmouseout=handleMouseOut;
-
-function handleEvent(e) {
-    // tell the browser we're handling this event
-    e.preventDefault();
-    e.stopPropagation();
-}
-
-function handleMouseDown(e){
-    handleEvent(e)
-    // calculate the current mouse position
-    startX=parseInt(e.clientX-offsetX);
-    startY=parseInt(e.clientY-offsetY);
-    // test mouse position against all stickers
-    // post result if mouse is in a sticker
-    for(let i=0;i<stickers.length;i++){
-        if(stickers[i].isMouseInSticker(startX,startY)){
-            // the mouse is inside this sticker
-            // select this sticker and bring it to the top
-            selectedSticker = stickers.splice(i, 1)[0];
-            stickers.push(selectedSticker);
-            // set the isDragging flag
-            isDragging=true;
-            // and return (==stop looking for 
-            //     further stickers under the mouse)
-            return;
+    handleEvent(e) {
+        // tell the browser we're handling this event
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    handleMouseDown(e){
+        this.handleEvent(e)
+        // calculate the current mouse position
+        this.startX=parseInt(e.clientX-this.offsetX);
+        this.startY=parseInt(e.clientY-this.offsetY);
+        // test mouse position against all stickers
+        // post result if mouse is in a sticker
+        for(let i=0;i<this.stickers.length;i++){
+            if(this.stickers[i].isMouseInSticker(this.startX,this.startY)){
+                // the mouse is inside this sticker
+                // select this sticker and bring it to the top
+                this.selectedSticker = this.stickers.splice(i, 1)[0];
+                this.stickers.push(this.selectedSticker);
+                // set the isDragging flag
+                this.isDragging=true;
+                // and return (==stop looking for 
+                //     further stickers under the mouse)
+                return;
+            }
         }
     }
-}
-
-function handleMouseUp(e){
-    // return if we're not dragging
-    if(!isDragging){return;}
-    handleEvent(e)
-    // the drag is over -- clear the isDragging flag
-    isDragging=false;
-}
-
-function handleMouseOut(e){
-    // return if we're not dragging
-    if(!isDragging){return;}
-    handleEvent(e)
-    // the drag is over -- clear the isDragging flag
-    isDragging=false;
-}
-
-function handleMouseMove(e){
-    // return if we're not dragging
-    if(!isDragging){return;}
-    handleEvent(e)
-    // calculate the current mouse position         
-    mouseX=parseInt(e.clientX-offsetX);
-    mouseY=parseInt(e.clientY-offsetY);
-    // how far has the mouse dragged from its previous mousemove position?
-    let dx=mouseX-startX;
-    let dy=mouseY-startY;
-    // move the selected sticker by the drag distance
-    selectedSticker.x+=dx;
-    selectedSticker.y+=dy;
-    // clear the canvas and redraw all stickers
-    drawAll();
-    // update the starting drag position (== the current mouse position)
-    startX=mouseX;
-    startY=mouseY;
-}
-
-// clear the canvas and 
-// redraw all stickers in their current positions
-function drawAll(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    stickers.forEach(sticker => sticker.drawOnCanvas(ctx));
-}
-
-$("#disabledForm").submit(e => {
-    handleEvent(e)
-})
-
-function loadStickers() {
-    stickers = [];
-
-    userId = $("#submitIdInput").val().trim();
     
-    db.collection("users").doc(userId).collection("stickers").get().then(querySnapshot => {
-        if (!querySnapshot.empty) {
-            querySnapshot.forEach(stickerInfo => {
-                db.collection("stickers").doc(stickerInfo.data().stickerId.trim()).get().then(stickerDoc => {
-                    let stickerImg = new Image(stickerDoc.data().width, stickerDoc.data().height);
-                    stickerImg.onload = () => {
-                        // define one image and save it in the stickers[] array
-                        stickers.push( new Sticker(stickerInfo.data().x, stickerInfo.data().y, stickerInfo.data().z, stickerImg, stickerInfo.id) );
-                        if (stickers.length == querySnapshot.size) {
-                            stickers.sort((a,b) => a.z - b.z);
-                            // draw the stickers on the canvas
-                            console.log(stickers);
-                            drawAll();
-                            alert("Stickers loaded!");
-                        }
-                    };
-                    // put your image src here!
-                    stickerImg.src=stickerDoc.data().src;
-                });
-            });
-        } else {
-            userId = "";
-            alert("No such id");
-        }
-    }).catch(error => {
-        // The document probably doesn't exist.
-        console.error("Error updating document: ", error);
-    });
-}
+    handleMouseUp(e){
+        // return if we're not dragging
+        if(!this.isDragging){return;}
+        this.handleEvent(e)
+        // the drag is over -- clear the isDragging flag
+        this.isDragging=false;
+    }
+    
+    handleMouseOut(e){
+        // return if we're not dragging
+        if(!this.isDragging){return;}
+        this.handleEvent(e)
+        // the drag is over -- clear the isDragging flag
+        this.isDragging=false;
+    }
+    
+    handleMouseMove(e){
+        // return if we're not dragging
+        if(!this.isDragging){return;}
+        this.handleEvent(e)
+        // calculate the current mouse position         
+        let mouseX=parseInt(e.clientX-this.offsetX);
+        let mouseY=parseInt(e.clientY-this.offsetY);
+        // how far has the mouse dragged from its previous mousemove position?
+        let dx=mouseX-this.startX;
+        let dy=mouseY-this.startY;
+        // move the selected sticker by the drag distance
+        this.selectedSticker.x+=dx;
+        this.selectedSticker.y+=dy;
+        // clear the canvas and redraw all stickers
+        this.drawAll();
+        // update the starting drag position (== the current mouse position)
+        this.startX=mouseX;
+        this.startY=mouseY;
+    }
 
-function addNewUser() {
-    db.collection("users").add({
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(docRef => {
-        userId = docRef.id;
-        $("#submitIdInput").val(userId);
-    });
-}
-
-function addStickers() {
-    //load new stickers
-    const code = $("#submitCodeInput").val().trim();
-
-    if (userId != "") {
-        db.collection("codes").where("code", "==", code).limit(1).get().then(querySnapshot => {
+    handleMouseWheel(e){
+        // return if we're not dragging
+        if(!this.isDragging){return;}
+        this.handleEvent(e)
+        this.selectedSticker.angle = (this.selectedSticker.angle + e.deltaY * 0.1) % 360;
+        this.drawAll();
+    }
+    
+    // clear the canvas and 
+    // redraw all stickers in their current positions
+    drawAll(){
+        this.ctx.clearRect(0,0,this.canvasElement.width,this.canvasElement.height);
+        this.stickers.forEach(sticker => sticker.drawOnCanvas(this.ctx));
+    }
+    
+    loadStickers() {
+        this.stickers = [];
+    
+        userId = $("#submitIdInput").val().trim();
+        
+        this.db.collection("users").doc(userId).collection("stickers").get().then(querySnapshot => {
             if (!querySnapshot.empty) {
-                let stickerIds = querySnapshot.docs[0].data().stickerIds;
-                stickerIds.forEach(stickerId => {
-                    db.collection("users").doc(userId).collection("stickers").add({
-                        stickerId: stickerId.trim(),
-                        x: 0,
-                        y: 0,
-                        z: stickers.length
-                    }).then(docRef => {
-                        db.collection("stickers").doc(stickerId.trim()).get().then(stickerDoc => {
-                            let stickerImg = new Image(stickerDoc.data().width, stickerDoc.data().height);
-                            stickerImg.onload = () => {
-                                // define one image and save it in the stickers[] array
-                                stickers.push( new Sticker(0, 0, stickers.length, stickerImg, docRef.id) );
-                                drawAll();
-                            };
-                            // put your image src here!
-                            stickerImg.src=stickerDoc.data().src;
-                        });
-                        
+                querySnapshot.forEach(stickerInfo => {
+                    this.db.collection("stickers").doc(stickerInfo.data().stickerId.trim()).get().then(stickerDoc => {
+                        let stickerImg = new Image(stickerDoc.data().width, stickerDoc.data().height);
+                        stickerImg.onload = () => {
+                            // define one image and save it in the stickers[] array
+                            this.stickers.push( new Sticker(stickerInfo.data().x, stickerInfo.data().y, stickerInfo.data().z, stickerImg, stickerInfo.id) );
+                            if (this.stickers.length == querySnapshot.size) {
+                                this.stickers.sort((a,b) => a.z - b.z);
+                                // draw the stickers on the canvas
+                                this.drawAll();
+                                alert("Stickers loaded!");
+                            }
+                        };
+                        // put your image src here!
+                        stickerImg.src=stickerDoc.data().src;
                     });
-                })
-                alert("Stickers loaded!");
+                });
             } else {
-                alert("Invalid code");
+                userId = "";
+                alert("No such id");
             }
         }).catch(error => {
             // The document probably doesn't exist.
             console.error("Error updating document: ", error);
         });
-    } else {
-        alert("provide valid id first");
+    }
+    
+    addNewUser() {
+        this.db.collection("users").add({
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(docRef => {
+            userId = docRef.id;
+            $("#submitIdInput").val(userId);
+        });
+    }
+    
+    addStickers() {
+        //load new stickers
+        const code = $("#submitCodeInput").val().trim();
+    
+        if (userId != "") {
+            this.db.collection("codes").where("code", "==", code).limit(1).get().then(querySnapshot => {
+                if (!querySnapshot.empty) {
+                    let stickerIds = querySnapshot.docs[0].data().stickerIds;
+                    stickerIds.forEach(stickerId => {
+                        this.db.collection("users").doc(userId).collection("stickers").add({
+                            stickerId: stickerId.trim(),
+                            x: 0,
+                            y: 0,
+                            z: this.stickers.length
+                        }).then(docRef => {
+                            this.db.collection("stickers").doc(stickerId.trim()).get().then(stickerDoc => {
+                                let stickerImg = new Image(stickerDoc.data().width, stickerDoc.data().height);
+                                stickerImg.onload = () => {
+                                    // define one image and save it in the stickers[] array
+                                    this.stickers.push( new Sticker(0, 0, stickers.length, stickerImg, docRef.id) );
+                                    drawAll();
+                                };
+                                // put your image src here!
+                                stickerImg.src=stickerDoc.data().src;
+                            });
+                            
+                        });
+                    })
+                    alert("Stickers loaded!");
+                } else {
+                    alert("Invalid code");
+                }
+            }).catch(error => {
+                // The document probably doesn't exist.
+                console.error("Error updating document: ", error);
+            });
+        } else {
+            alert("provide valid id first");
+        }
+    }
+    
+    saveStickers() {
+        //lock position of stickers
+        let saved = 0;
+        for(let i=0;i<this.stickers.length;i++){
+            const currSticker = this.stickers[i];
+            this.db.collection("users").doc(userId).collection("stickers").doc(currSticker.id).update({
+                x: currSticker.x,
+                y: currSticker.y,
+                z: i
+            })
+            .then(function() {
+                saved++;
+                if (saved == this.stickers.length) {
+                    alert("Stickers saved!")
+                }
+            })
+            .catch(function(error) {
+                // The document probably doesn't exist.
+                console.error("Error updating document: ", error);
+            });
+        } 
+        console.log("saved canvas");
+    }
+    
+    downloadImage() {
+        image = this.canvasElement.toDataURL("image/png").replace("image/png", "image/octet-stream");
+        let link = document.createElement('a');
+        link.download = "snowman-stickers.png";
+        link.href = image;
+        link.click();
     }
 }
 
-function saveStickers() {
-    //lock position of stickers
-    let saved = 0;
-    for(let i=0;i<stickers.length;i++){
-        const sticker = stickers[i];
-        db.collection("users").doc(userId).collection("stickers").doc(sticker.id).update({
-            x: sticker.x,
-            y: sticker.y,
-            z: i
-        })
-        .then(function() {
-            saved++;
-            if (saved == stickers.length) {
-                alert("Stickers saved!")
-            }
-        })
-        .catch(function(error) {
-            // The document probably doesn't exist.
-            console.error("Error updating document: ", error);
-        });
-    } 
-    console.log("saved canvas");
-}
+// Access the database at firestore
+const db = firebase.firestore();
 
-function downloadImage() {
-    var canvas = document.getElementById("stickerCanvas");
-    image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-    var link = document.createElement('a');
-    link.download = "snowman-stickers.png";
-    link.href = image;
-    link.click();
-}
+let userId = "";
+
+stickerCanvas = new StickerCanvas("stickerCanvas", 800, 600, '4px solid black', db);
+
+$("#canvasLoc").append(stickerCanvas.canvasElement);
+
+stickerCanvas.reOffset();
+window.onscroll=stickerCanvas.reOffset.bind(stickerCanvas);
+window.onresize=stickerCanvas.reOffset.bind(stickerCanvas);
+
+$("#disabledForm").submit(e => {
+    stickerCanvas.handleEvent(e)
+})
