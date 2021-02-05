@@ -1,0 +1,60 @@
+use snowman_stickers;
+
+DROP TABLE IF EXISTS stickers;
+
+CREATE TABLE stickers (
+   id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+   height INT NOT NULL,
+   width INT NOT NULL,
+   src VARCHAR(512) NOT NULL,
+   title VARCHAR(64) NOT NULL,
+   createdate DATETIME NOT NULL,
+   updatedate DATETIME NOT NULL
+);
+
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+   id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+   username VARCHAR(64) NOT NULL,
+   createdate DATETIME NOT NULL,
+   updatedate DATETIME NOT NULL
+);
+
+DROP TABLE IF EXISTS user_stickers;
+
+CREATE TABLE user_stickers (
+   id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+   user_id INT NOT NULL,
+   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+   sticker_id INT NOT NULL,
+   FOREIGN KEY (sticker_id) REFERENCES stickers(id) ON DELETE CASCADE,
+   x INT NOT NULL,
+   y INT NOT NULL,
+   z INT NOT NULL,
+   angle INT NOT NULL,
+   createdate DATETIME NOT NULL,
+   updatedate DATETIME NOT NULL
+);
+
+DROP TABLE IF EXISTS codes;
+
+CREATE TABLE codes (
+	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	title VARCHAR(64) NOT NULL,
+    expiry DATETIME NOT NULL,
+    createdate DATETIME NOT NULL,
+	updatedate DATETIME NOT NULL
+);
+
+DROP TABLE IF EXISTS code_stickers;
+
+CREATE TABLE code_stickers (
+	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	code_id INT NOT NULL,
+    FOREIGN KEY (code_id) REFERENCES codes(id) ON DELETE CASCADE,
+    sticker_id INT NOT NULL,
+    FOREIGN KEY (sticker_id) REFERENCES stickers(id) ON DELETE CASCADE,
+    createdate DATETIME NOT NULL,
+	updatedate DATETIME NOT NULL
+);

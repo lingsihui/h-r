@@ -1,0 +1,130 @@
+<!DOCTYPE HTML>
+<!--
+	Transitive by TEMPLATED
+	templated.co @templatedco
+	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
+-->
+<html>
+	<head>
+		<title>Stickers</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="shortcut icon" type="image/jpg" href="assets/favicon.ico"/>
+	</head>
+	<body>
+
+		<!-- Header -->
+			<header id="header" class="alt">
+				<div class="logo"><a href="index.html">Stickers <span>by SNOWMAN</span></a></div>
+				<a href="#menu" class="toggle"><span>Menu</span></a>
+			</header>
+
+		<!-- Nav -->
+			<nav id="menu">
+				<ul class="links">
+					<li><a href="index.html">Home</a></li>
+					<li><a href="https://github.com/lingsihui/h-r">GitHub</a></li>
+					<li><a href="https://devpost.com/software/snowman-stickers">Devpost</a></li>
+				</ul>
+			</nav>
+
+		<!-- Banner -->
+			<section id="banner">
+				<div class="inner">
+					<div class="image">
+						<img src="images/snowman.png" alt="" />
+					</div>
+					<h1>Stickers</h1>
+					<p>A virtual canvas to place your stickers<br />
+					built by <a href="https://github.com/kstonekuan">Kingston</a> and <a href="https://github.com/lingsihui">Si Hui</a>.</p>
+					<a href="#one" class="button special scrolly">Get Started</a>
+				</div>
+			</section>
+
+		<!-- One -->
+			<section id="one" class="wrapper style2">
+				<div class="inner">
+					<div>
+						<div class="box">
+							<div class="content align-center" id="canvasLoc">
+								<h2 class="align-center">This is your canvas! Add stickers below</h2>
+								<h3 class="align-center">Hold and drag to move stickers, scroll to rotate</h3>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+		<!-- Footer -->
+			<footer id="footer" class="wrapper">
+				<div class="inner">
+					<section>
+						<div class="box">
+							<div class="content">
+								<h2 class="align-center">Settings</h2>
+								<hr />
+								<form id="disabledForm">
+									<div class="field">
+										<label for="name">Enter your user id here or generate a new one to start a new canvas for your stickers.</label>
+										<label for="name">(Sample: wRwZlg1awAntCDbbpppR)</label>
+										<input name="name" id="submitIdInput" type="text" placeholder="ID">
+									</div>
+
+									<ul class="actions align-right">
+										<li><input value="Load" class="button special" onclick="stickerCanvas.loadStickers()" type="submit"></li>
+										<li><input value="New" class="button special" onclick="stickerCanvas.addNewUser()" type="submit"></li>
+									</ul>
+
+									<div class="field">
+										<label for="name">Enter the code you have bought or gotten from the event here to claim your stickers.</label>
+										<label for="name">(Try SNOW99, GOLDMAN, HNRX567 or HNRGOLD)</label>
+										<input name="name" id="submitCodeInput" type="text" placeholder="STICKER CODE">
+									</div>
+
+									<ul class="actions align-right">
+										<li><input value="Get Stickers" class="button special" onclick="stickerCanvas.addStickers()" type="submit"></li>
+									</ul>
+									
+									<div class="field">
+										<label for="name">Remember to press save when your happy with your design!</label>
+									</div>
+
+									<ul class="actions align-left">
+										<li><input value="Save" class="button special" onclick="stickerCanvas.saveStickers()" type="submit"></li>
+										<li><input value="Download" class="button special" onclick="stickerCanvas.downloadImage()" type="submit"></li>
+									</ul>
+
+								</form>
+							</div>
+						</div>
+					</section>
+					<div class="copyright">
+						&copy; Snowman Stickers: <a href="https://templated.co/">TEMPLATED</a>. Images <a href="https://unsplash.com/">Unsplash</a>. Video <a href="http://coverr.co/">Coverr</a>.
+					</div>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+			<!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+			<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+
+			<!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
+			<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
+		
+			<!-- Add Firebase products that you want to use -->
+			<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-firestore.js"></script>
+		
+			<script src="assets/js/firebase_init.js"></script>
+			<script src="assets/js/sticker.js"></script>
+			<script src="assets/js/canvas.js"></script>
+
+	</body>
+</html>
