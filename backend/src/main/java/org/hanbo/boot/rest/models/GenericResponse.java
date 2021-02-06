@@ -1,28 +1,33 @@
 package org.hanbo.boot.rest.models;
 
-public class GenericResponse
-{
-   private boolean success;
-   
-   private String statusMsg;
+public class GenericResponse {
+    private boolean success;
 
-   public boolean isSuccess()
-   {
-      return success;
-   }
+    private String statusMsg;
 
-   public void setSuccess(boolean success)
-   {
-      this.success = success;
-   }
+    private int statusCode;
 
-   public String getStatusMsg()
-   {
-      return statusMsg;
-   }
+    public boolean isSuccess() {
+        return success;
+    }
 
-   public void setStatusMsg(String statusMsg)
-   {
-      this.statusMsg = statusMsg;
-   }
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public String getStatusMsg() {
+        return statusMsg;
+    }
+
+    public void setStatusMsg(String statusMsg) {
+        this.statusMsg = statusMsg;
+    }
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
 }

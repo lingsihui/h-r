@@ -1,104 +1,103 @@
 package org.hanbo.boot.rest.models;
 
-public class StickerModel
-{
-   private int id;
+public class StickerModel {
+    private int id;
 
-   private int userId;
-   
-   private int stickerId;
-   
-   private int x;
-   
-   private int y;
-   
-   private int z;
-   
-   private int angle;
+    private int userId;
 
-   private int height;
+    private int stickerId;
 
-   private int width;
+    private int x;
 
-   private String src;
+    private int y;
 
-   public int getId() {
-      return id;
-   }
+    private int z;
 
-   public void setId(int id) {
-      this.id = id;
-   }
+    private int angle;
 
-   public int getHeight() {
-      return height;
-   }
+    private int height;
 
-   public void setHeight(int height) {
-      this.height = height;
-   }
+    private int width;
 
-   public int getWidth() {
-      return width;
-   }
+    private String src;
 
-   public void setWidth(int width) {
-      this.width = width;
-   }
+    public int getId() {
+        return id;
+    }
 
-   public String getSrc() {
-      return src;
-   }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-   public void setSrc(String src) {
-      this.src = src;
-   }
+    public int getHeight() {
+        return height;
+    }
 
-   public int getUserId() {
-      return userId;
-   }
+    public void setHeight(int height) {
+        this.height = height;
+    }
 
-   public void setUserId(int userId) {
-      this.userId = userId;
-   }
+    public int getWidth() {
+        return width;
+    }
 
-   public int getStickerId() {
-      return stickerId;
-   }
+    public void setWidth(int width) {
+        this.width = width;
+    }
 
-   public void setStickerId(int stickerId) {
-      this.stickerId = stickerId;
-   }
+    public String getSrc() {
+        return src;
+    }
 
-   public int getX() {
-      return x;
-   }
+    public void setSrc(String src) {
+        this.src = src;
+    }
 
-   public void setX(int x) {
-      this.x = x;
-   }
+    public int getUserId() {
+        return userId;
+    }
 
-   public int getY() {
-      return y;
-   }
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 
-   public void setY(int y) {
-      this.y = y;
-   }
+    public int getStickerId() {
+        return stickerId;
+    }
 
-   public int getZ() {
-      return z;
-   }
+    public void setStickerId(int stickerId) {
+        this.stickerId = stickerId;
+    }
 
-   public void setZ(int z) {
-      this.z = z;
-   }
+    public int getX() {
+        return x;
+    }
 
-   public int getAngle() {
-      return angle;
-   }
+    public void setX(int x) {
+        this.x = x;
+    }
 
-   public void setAngle(int angle) {
-      this.angle = angle;
-   }
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public int getZ() {
+        return z;
+    }
+
+    public void setZ(int z) {
+        this.z = z;
+    }
+
+    public int getAngle() {
+        return angle;
+    }
+
+    public void setAngle(int angle) {
+        this.angle = angle;
+    }
 }
